@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="description" content="Latihan interaktif Bahasa Melayu Tahun 5: 15 soalan Betul atau Salah.">
+  <title>Detektif Bahasa | Betul atau Salah?</title>
+  <style>
+    :root{--ink:#172238;--muted:#64748b;--navy:#0f172a;--mint:#0ea98e;--mint2:#ccfbef;--orange:#fb923c;--paper:#fff;--danger:#be4250;--line:#e6ebf2}
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;min-height:100dvh;font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:radial-gradient(circle at 12% 10%,#fcd9b5 0,transparent 30%),radial-gradient(circle at 95% 25%,#b6f0df 0,transparent 29%),linear-gradient(145deg,#f6f9ff 0%,#f0f3ff 100%);padding:clamp(14px,3vw,36px)}
+    button,input{font:inherit}
+    button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+    button:disabled{cursor:not-allowed;opacity:.45}
+    .shell{width:min(100%,650px);margin:0 auto}
+    .brand{display:flex;align-items:center;justify-content:space-between;margin-bottom:17px;gap:10px}
+    .brand-name{font-weight:900;letter-spacing:.025em;font-size:14px;color:#334155;display:flex;align-items:center;gap:10px}
+    .brand-icon{display:grid;place-items:center;border-radius:14px;width:42px;height:42px;background:var(--navy);font-size:23px;box-shadow:0 9px 24px #0f172a20}
+    .tag{border:1px solid #ffffff99;background:#ffffffb8;padding:8px 11px;border-radius:999px;font-size:12px;font-weight:800;color:#39546c}
+    .card{background:#ffffffea;border:1px solid #ffffff;box-shadow:0 20px 55px #26375420,0 4px 18px #2637540c;border-radius:28px;padding:clamp(20px,5vw,36px);backdrop-filter:blur(16px)}
+    .eyebrow{display:inline-flex;gap:8px;align-items:center;background:#fff0db;color:#9a5619;padding:8px 12px;border-radius:999px;font-size:12px;font-weight:850;letter-spacing:.035em}
+    h1{font-size:clamp(33px,8.5vw,50px);line-height:1.06;letter-spacing:-.05em;margin:20px 0 10px;color:#112036}
+    h2{font-size:clamp(27px,6vw,36px);line-height:1.15;letter-spacing:-.035em;margin:14px 0 10px}
+    .sub{color:var(--muted);font-size:15px;line-height:1.7;margin:0 0 24px}
+    .field{margin:18px 0}
+    label{display:block;font-weight:800;margin-bottom:9px;font-size:14px}
+    input{width:100%;height:54px;border-radius:15px;border:1.5px solid #dae3ee;padding:0 16px;background:#fff;color:var(--ink);outline:none;font-size:16px;transition:border .15s,box-shadow .15s}
+    input:focus{border-color:var(--mint);box-shadow:0 0 0 4px #0ea98e24}
+    input::placeholder{color:#9aa6b3}
+    .primary,.secondary{border:0;border-radius:16px;padding:16px 20px;font-weight:850;font-size:15px;min-height:55px;transition:transform .15s,box-shadow .15s}
+    .primary{background:linear-gradient(135deg,#087a75,#0ab78f);color:#fff;box-shadow:0 10px 23px #0ab78f30}
+    .primary:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 14px 27px #0ab78f40}
+    .secondary{background:#eef3f9;color:#254258}
+    .full{width:100%}
+    .micro{font-size:12px;color:#7b8999;text-align:center;line-height:1.5;margin:13px 0 0}
+    .view{display:none}.view.active{display:block;animation:appear .3s ease-out}
+    @keyframes appear{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}
+    .progress-head{display:flex;justify-content:space-between;font-size:13px;font-weight:850;align-items:center;color:#526478;gap:10px}
+    .progress-track{background:#e9eef4;height:10px;border-radius:999px;overflow:hidden;margin:10px 0 26px}
+    .progress-fill{height:100%;width:0%;background:linear-gradient(90deg,#00a993,#ffc071);border-radius:999px;transition:width .25s}
+    .number{color:#0a917f;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.13em}
+    .question{font-size:clamp(21px,5vw,28px);font-weight:850;line-height:1.45;letter-spacing:-.022em;min-height:125px;margin:18px 0 26px}
+    .choices{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin:0 0 25px}
+    .choice{border:2px solid #e4eaf1;border-radius:19px;padding:21px 8px;background:white;display:flex;align-items:center;justify-content:center;gap:10px;font-weight:900;font-size:20px;color:#263b4e;transition:all .14s;min-height:86px}
+    .choice:hover{border-color:#a6ccc6;transform:translateY(-1px)}
+    .choice.selected.true{background:#e1faf4;border-color:#11aa90;color:#087963}
+    .choice.selected.false{background:#fff0e5;border-color:#ef9a51;color:#9b561d}
+    .choice .em{font-size:23px}
+    .actions{display:flex;gap:10px}
+    .actions .primary{flex:1}.actions .secondary{flex:0 0 auto}
+    .dots{display:flex;justify-content:center;gap:5px;flex-wrap:wrap;margin-top:23px}
+    .dot{height:6px;width:13px;background:#dce5ee;border-radius:50px}.dot.done{background:#09a48d}.dot.current{background:#fb923c;width:22px}
+    .result-top{text-align:center}
+    .medal{font-size:52px;margin:6px auto 10px}
+    .score-wrap{margin:15px auto 19px;width:180px;height:180px;display:grid;place-items:center;border-radius:50%;background:conic-gradient(#0baa91 0 var(--score),#e7edf4 var(--score) 100%)}
+    .score-inner{background:#fff;border-radius:50%;width:149px;height:149px;display:flex;justify-content:center;align-items:center;flex-direction:column}
+    .big-score{font-size:49px;font-weight:950;letter-spacing:-.055em;line-height:1}
+    .small-score{font-size:13px;color:#64748b;font-weight:800}
+    .status{border-radius:15px;background:#edf4fa;color:#3f5a74;border:1px solid #d6e2ee;padding:13px 15px;font-size:13px;font-weight:700;line-height:1.6;text-align:left;margin:16px 0}
+    .status.ok{background:#e6fbf2;border-color:#a6e9d0;color:#116d55}.status.warn{background:#fff5e3;border-color:#f9d99a;color:#875b19}.status.bad{background:#fff1f1;border-color:#f5c2c2;color:#9b343c}
+    .row-buttons{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+    details{margin-top:20px;border:1px solid var(--line);border-radius:17px;background:#fafcff;padding:15px}
+    summary{cursor:pointer;font-weight:900;color:#294456}
+    .review{padding:12px 0;border-bottom:1px solid #e2eaf2;font-size:13px;line-height:1.5}.review:last-child{border-bottom:0}
+    .review b{display:block;margin-bottom:6px;font-size:14px}
+    .review .correct{color:#087961;font-weight:850}.review .incorrect{color:#b4454b;font-weight:850}
+    .footer{font-size:12px;color:#78879a;text-align:center;margin:16px auto 0;line-height:1.5}
+    .spinner{width:14px;height:14px;display:inline-block;border:2px solid #ffffff90;border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;margin-right:8px;vertical-align:middle}@keyframes spin{to{transform:rotate(360deg)}}
+    @media(max-width:390px){.card{border-radius:22px}.choice{font-size:17px;min-height:76px}.choices{gap:9px}.row-buttons{grid-template-columns:1fr}}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="brand">
+      <div class="brand-name"><span class="brand-icon" aria-hidden="true">🔎</span> DETEKTIF BAHASA</div>
+      <span class="tag">BM · TAHUN 5</span>
+    </header>
+    <main class="card">
+      <section id="startView" class="view active" aria-labelledby="mainTitle">
+        <span class="eyebrow">✨ LATIHAN INTERAKTIF</span>
+        <h1 id="mainTitle">Betul atau<br>Salah?</h1>
+        <p class="sub">Baca setiap pernyataan dengan teliti. Pilih <b>BETUL</b> atau <b>SALAH</b>. Ada 15 soalan untuk dijawab. Selamat mencuba!</p>
+        <form id="startForm">
+          <div class="field"><label for="studentName">Nama penuh murid</label><input id="studentName" name="nama" placeholder="Contoh: Ahmad Danial" maxlength="60" required autocomplete="name"></div>
+          <div class="field"><label for="studentClass">Kelas</label><input id="studentClass" name="kelas" value="5 Battuta" maxlength="40" required autocomplete="off"></div>
+          <button type="submit" class="primary full">MULA LATIHAN →</button>
+        </form>
+        <p class="micro">15 soalan · 1 markah bagi setiap jawapan betul · Mesra telefon</p>
+      </section>
+      <section id="quizView" class="view" aria-labelledby="questionText">
+        <div class="progress-head"><span id="progressText">Soalan 1 daripada 15</span><span id="progressPercent">0% selesai</span></div>
+        <div class="progress-track" role="progressbar" aria-label="Kemajuan latihan" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progressTrack"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="number">BACA DAN TENTUKAN</div>
+        <p class="question" id="questionText"></p>
+        <div class="choices" role="group" aria-label="Pilihan jawapan">
+          <button class="choice true" id="correctBtn" type="button" aria-pressed="false"><span class="em" aria-hidden="true">✅</span> BETUL</button>
+          <button class="choice false" id="wrongBtn" type="button" aria-pressed="false"><span class="em" aria-hidden="true">❌</span> SALAH</button>
+        </div>
+        <div class="actions"><button id="backBtn" class="secondary" type="button">← Kembali</button><button id="nextBtn" class="primary" type="button" disabled>Seterusnya →</button></div>
+        <div id="dots" class="dots" aria-hidden="true"></div>
+      </section>
+      <section id="resultView" class="view" aria-labelledby="resultHeading">
+        <div class="result-top">
+          <div class="medal" aria-hidden="true" id="medal">🏆</div>
+          <span class="eyebrow">LATIHAN SELESAI!</span>
+          <h2 id="resultHeading">Syabas!</h2>
+          <p class="sub" id="resultSub" style="margin-bottom:4px"></p>
+          <div class="score-wrap" id="scoreWrap"><div class="score-inner"><span id="scoreNum" class="big-score">0/15</span><span class="small-score" id="scorePercent">0% markah</span></div></div>
+        </div>
+        <div id="sendStatus" class="status" role="status" aria-live="polite">Markah belum dihantar ke Google Sheets.</div>
+        <button id="sendBtn" class="primary full" type="button">☁ HANTAR MARKAH KE CIKGU</button>
+        <div class="row-buttons"><button id="retryBtn" class="secondary" type="button">↻ Cuba Lagi</button><button id="editBtn" class="secondary" type="button">← Semak Jawapan</button></div>
+        <details><summary>Lihat ulasan semua 15 soalan</summary><div id="reviewList"></div></details>
+        <p class="micro">Pastikan paparan menunjukkan <b>“Disahkan tersimpan”</b> selepas menghantar.</p>
+      </section>
+    </main>
+    <footer class="footer">Dibina untuk latihan Bahasa Melayu Tahun 5 · Nama dan markah hanya direkod apabila murid menekan butang hantar.</footer>
+  </div>
+  <script>
+    'use strict';
+    // URL Web App Apps Script cikgu (siap dipasang).
+    const API_URL = 'https://script.google.com/macros/s/AKfycbwkY8dmii8httZoa2EwTtrEHKbQVG_56lGGVOHTZZcj45iF1uz2DgW-bBOdWZ6rU4TmSA/exec';
+
+    // Kod jawapan: B = BETUL; S = SALAH. Selaraskan susunan jika soalan diubah.
+    const QUIZ = [
+      {text:'Kata nama khas seperti “Malaysia” perlu dimulakan dengan huruf besar.', answer:'B', reason:'Nama khas seperti nama negara ditulis dengan huruf besar pada pangkalnya.'},
+      {text:'Perkataan “berenang” ialah kata adjektif.', answer:'S', reason:'“Berenang” ialah kata kerja yang menunjukkan perbuatan.'},
+      {text:'Tanda soal (?) digunakan pada akhir ayat tanya.', answer:'B', reason:'Ayat tanya lazimnya diakhiri dengan tanda soal.'},
+      {text:'Ayat “Tolong tutup pintu.” ialah ayat penyata.', answer:'S', reason:'Ayat itu ialah ayat permintaan kerana menggunakan perkataan “tolong”.'},
+      {text:'Perkataan “wangi” ialah kata adjektif.', answer:'B', reason:'“Wangi” menerangkan sifat bau.'},
+      {text:'Kata ganti nama diri “saya” merujuk kepada orang kedua.', answer:'S', reason:'“Saya” ialah kata ganti nama diri orang pertama.'},
+      {text:'Simpulan bahasa “ringan tulang” membawa maksud rajin bekerja.', answer:'B', reason:'“Ringan tulang” bermaksud rajin bekerja atau suka membantu.'},
+      {text:'Kata hubung “kerana” boleh digunakan untuk menyatakan sebab.', answer:'B', reason:'Contohnya, “Aina tidak hadir kerana demam.”'},
+      {text:'Perkataan “sekolah” ialah kata kerja.', answer:'S', reason:'“Sekolah” ialah kata nama am, bukannya kata kerja.'},
+      {text:'Kata sendi nama “di” yang menunjukkan tempat ditulis rapat dengan perkataan selepasnya.', answer:'S', reason:'“Di” yang menunjukkan tempat ditulis terpisah, contohnya “di rumah”.'},
+      {text:'“Sila duduk.” ialah contoh ayat silaan.', answer:'B', reason:'Perkataan “sila” digunakan untuk mempersilakan seseorang.'},
+      {text:'Kata ganti nama “mereka” digunakan untuk seorang individu sahaja.', answer:'S', reason:'“Mereka” biasanya merujuk kepada lebih daripada seorang.'},
+      {text:'“Beberapa” ialah kata bilangan tak tentu.', answer:'B', reason:'“Beberapa” menunjukkan bilangan yang tidak dinyatakan dengan tepat.'},
+      {text:'Nama hari seperti “Isnin” ditulis dengan huruf kecil.', answer:'S', reason:'Nama hari ialah kata nama khas dan dimulakan dengan huruf besar.'},
+      {text:'Kata hubung “tetapi” boleh menunjukkan pertentangan idea.', answer:'B', reason:'Contohnya, “Dia letih tetapi tetap berusaha.”'}
+    ];
+
+    const $ = (id) => document.getElementById(id);
+    let student = {nama:'', kelas:''};
+    let position = 0;
+    let answers = Array(QUIZ.length).fill(null);
+    let attemptId = newId();
+    let sent = false;
+    let busy = false;
+
+    function newId(){
+      if(window.crypto && typeof crypto.randomUUID === 'function') return crypto.randomUUID();
+      return 'cubaan-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2,14);
+    }
+    function switchView(id){
+      document.querySelectorAll('.view').forEach(el => el.classList.toggle('active', el.id === id));
+      window.scrollTo({top:0,behavior:'instant'});
+    }
+    function render(){
+      const q = QUIZ[position];
+      $('questionText').textContent = q.text;
+      $('progressText').textContent = `Soalan ${position + 1} daripada ${QUIZ.length}`;
+      const doneCount = answers.filter(a => a !== null).length;
+      const p = Math.round(doneCount / QUIZ.length * 100);
+      $('progressPercent').textContent = `${p}% dijawab`;
+      $('progressFill').style.width = `${p}%`;
+      $('progressTrack').setAttribute('aria-valuenow', String(p));
+      for(const [id, val] of [['correctBtn','B'],['wrongBtn','S']]){
+        const el = $(id), picked = answers[position] === val;
+        el.classList.toggle('selected', picked);
+        el.setAttribute('aria-pressed', String(picked));
+      }
+      $('nextBtn').disabled = answers[position] === null;
+      $('nextBtn').textContent = position === QUIZ.length - 1 ? 'LIHAT KEPUTUSAN →' : 'Seterusnya →';
+      $('backBtn').disabled = position === 0;
+      $('dots').replaceChildren(...QUIZ.map((_, i) => {
+        const dot = document.createElement('span');
+        dot.className = 'dot' + (answers[i] !== null ? ' done':'') + (i === position?' current':'');
+        return dot;
+      }));
+    }
+    function selectAnswer(answer){answers[position] = answer;render();}
+    $('correctBtn').addEventListener('click',()=>selectAnswer('B'));
+    $('wrongBtn').addEventListener('click',()=>selectAnswer('S'));
+    $('backBtn').addEventListener('click',()=>{if(position>0){position--;render();}});
+    $('nextBtn').addEventListener('click',()=>{
+      if(answers[position] === null)return;
+      if(position === QUIZ.length-1)showResults();
+      else{position++;render();}
+    });
+    $('startForm').addEventListener('submit',e=>{
+      e.preventDefault();
+      const nama=$('studentName').value.trim().replace(/\s+/g,' '), kelas=$('studentClass').value.trim();
+      if(nama.length<2 || kelas.length<1){alert('Sila isi nama penuh dan kelas.');return;}
+      student={nama,kelas};position=0;answers=Array(QUIZ.length).fill(null);sent=false;busy=false;attemptId=newId();
+      render();switchView('quizView');
+    });
+    function showResults(){
+      if(answers.some(a => a === null))return;
+      const mark = QUIZ.reduce((sum,q,i)=>sum + Number(q.answer === answers[i]),0);
+      const pct = Math.round(mark/QUIZ.length*100);
+      $('scoreNum').textContent = `${mark}/${QUIZ.length}`;
+      $('scorePercent').textContent = `${pct}% markah`;
+      $('scoreWrap').style.setProperty('--score',pct+'%');
+      $('resultHeading').textContent = mark === 15 ? 'Hebat, semua tepat!' : mark >= 12 ? 'Syabas, bagus!' : mark >= 9 ? 'Teruskan usaha!' : 'Jom belajar lagi!';
+      $('resultSub').textContent = `${student.nama} · ${student.kelas}`;
+      $('medal').textContent = mark===15?'🏆':mark>=12?'🌟':mark>=9?'👏':'📚';
+      $('reviewList').replaceChildren(...QUIZ.map((q,i)=>{
+        const box=document.createElement('div'); box.className='review';
+        const title=document.createElement('b'); title.textContent=`${i+1}. ${q.text}`;
+        const result=document.createElement('div'); result.className=answers[i]===q.answer?'correct':'incorrect';
+        result.textContent=`Jawapan anda: ${label(answers[i])} · Jawapan sebenar: ${label(q.answer)}`;
+        const explain=document.createElement('div');explain.textContent=q.reason;
+        box.append(title,result,explain);return box;
+      }));
+      $('sendStatus').textContent=sent?'✅ Disahkan tersimpan dalam Google Sheets.':'Markah belum dihantar ke Google Sheets.';
+      $('sendStatus').className='status'+(sent?' ok':'');
+      $('sendBtn').disabled=sent;
+      $('sendBtn').textContent=sent?'✓ MARKAH SUDAH DISIMPAN':'☁ HANTAR MARKAH KE CIKGU';
+      $('editBtn').disabled=sent;
+      switchView('resultView');
+    }
+    function label(value){return value==='B'?'BETUL':'SALAH';}
+    $('editBtn').addEventListener('click',()=>{if(!sent){position=QUIZ.length-1;render();switchView('quizView');}});
+    $('retryBtn').addEventListener('click',()=>{
+      if(busy)return;
+      sent=false;position=0;answers=Array(QUIZ.length).fill(null);attemptId=newId();render();switchView('startView');
+    });
+    function status(message, type=''){$('sendStatus').textContent=message;$('sendStatus').className='status'+(type?' '+type:'');}
+    const sleep = ms => new Promise(resolve=>setTimeout(resolve,ms));
+
+    // JSONP HANYA untuk mengesahkan ID cubaan yang telah disimpan.
+    // API tidak memberikan nama murid atau senarai data Sheets.
+    function checkReceipt(id){
+      return new Promise((resolve,reject)=>{
+        const cb='bmCb'+Date.now()+'_'+Math.floor(Math.random()*100000);
+        const script=document.createElement('script');
+        let finished=false;
+        const done=(err,data)=>{
+          if(finished)return;finished=true;clearTimeout(timer);script.remove();delete window[cb];
+          if(err)reject(err);else resolve(data);
+        };
+        const timer=setTimeout(()=>done(new Error('Semakan tamat masa')),5500);
+        window[cb]=data=>done(null,data);
+        script.onerror=()=>done(new Error('Semakan tidak dapat dicapai'));
+        const sep=API_URL.includes('?')?'&':'?';
+        script.src=API_URL+sep+'mode=check&id='+encodeURIComponent(id)+'&callback='+encodeURIComponent(cb)+'&_='+Date.now();
+        document.head.appendChild(script);
+      });
+    }
+    $('sendBtn').addEventListener('click',async()=>{
+      if(busy||sent)return;
+      if(!/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec(?:\?.*)?$/.test(API_URL)){
+        status('Cikgu belum masukkan URL Web App Apps Script dalam fail index.html.','bad');return;
+      }
+      busy=true;$('sendBtn').disabled=true;
+      // Kunci semakan jawapan apabila percubaan penghantaran bermula.
+      $('editBtn').disabled=true;
+      $('sendBtn').innerHTML='<span class="spinner"></span>MENGHANTAR MARKAH...';
+      status('Sedang menghantar dan mengesahkan rekod dalam Google Sheets...');
+      try{
+        const body = new URLSearchParams({payload:JSON.stringify({id:attemptId,nama:student.nama,kelas:student.kelas,jawapan:answers})});
+        await fetch(API_URL,{method:'POST',mode:'no-cors',body,redirect:'follow'});
+        let receipt=null;
+        for(let i=0;i<6;i++){
+          await sleep(1100);
+          try{receipt=await checkReceipt(attemptId);if(receipt && receipt.found)break;}
+          catch(_){/* cuba semula semakan */}
+        }
+        if(receipt && receipt.found){
+          sent=true;
+          status(`✅ Disahkan tersimpan dalam Google Sheets! Markah: ${receipt.markah}/${receipt.jumlah}.`, 'ok');
+          $('sendBtn').textContent='✓ MARKAH SUDAH DISIMPAN';
+          $('editBtn').disabled=true;
+        }else{
+          status('⚠ Belum dapat sahkan rekod dalam Sheets. Semak deployment Apps Script dan tekan “Cuba Hantar Semula”. Sistem tidak akan menggandakan rekod bagi ID cubaan yang sama.','warn');
+          $('sendBtn').textContent='↻ CUBA HANTAR SEMULA';
+        }
+      }catch(error){
+        status('❌ Sambungan gagal. Semak Internet dan URL Apps Script, kemudian cuba semula.','bad');
+        $('sendBtn').textContent='↻ CUBA HANTAR SEMULA';
+      }finally{busy=false;$('sendBtn').disabled=sent;}
+    });
+  </script>
+</body>
+</html>
