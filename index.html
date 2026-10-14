@@ -88,6 +88,8 @@
           <button type="submit" class="primary full">MULA LATIHAN →</button>
         </form>
         <p class="micro">15 soalan · 1 markah bagi setiap jawapan betul · Mesra telefon</p>
+        <button id="testConnection" type="button" class="secondary full" style="margin-top:16px;font-size:13px;min-height:43px">🔧 UJI SAMBUNGAN KE SHEETS (UNTUK CIKGU)</button>
+        <div id="connectionStatus" class="status" style="display:none" role="status" aria-live="polite"></div>
       </section>
       <section id="quizView" class="view" aria-labelledby="questionText">
         <div class="progress-head"><span id="progressText">Soalan 1 daripada 15</span><span id="progressPercent">0% selesai</span></div>
@@ -121,7 +123,7 @@
   <script>
     'use strict';
     // URL Web App Apps Script cikgu (siap dipasang).
-    const API_URL = 'https://script.google.com/macros/s/AKfycbwkY8dmii8httZoa2EwTtrEHKbQVG_56lGGVOHTZZcj45iF1uz2DgW-bBOdWZ6rU4TmSA/exec';
+    const API_URL = 'https://script.google.com/macros/s/AKfycbwkY8dmii8httZoa2EwTtrEHKbQVG_56lGGVOHTZZcj45iF1uz2DgW-bBOdWZ6rU4TmSA/exec'; // Sambungan V2
 
     // Kod jawapan: B = BETUL; S = SALAH. Selaraskan susunan jika soalan diubah.
     const QUIZ = [
@@ -231,25 +233,70 @@
     function status(message, type=''){$('sendStatus').textContent=message;$('sendStatus').className='status'+(type?' '+type:'');}
     const sleep = ms => new Promise(resolve=>setTimeout(resolve,ms));
 
-    // JSONP HANYA untuk mengesahkan ID cubaan yang telah disimpan.
-    // API tidak memberikan nama murid atau senarai data Sheets.
-    function checkReceipt(id){
+    // JSONP untuk ujian kesihatan pelayan dan semakan resit ID cubaan sahaja.
+    // Tiada senarai nama murid atau rekod kelas dikembalikan kepada pengunjung.
+    function apiJSONP(params){
       return new Promise((resolve,reject)=>{
         const cb='bmCb'+Date.now()+'_'+Math.floor(Math.random()*100000);
         const script=document.createElement('script');
         let finished=false;
         const done=(err,data)=>{
-          if(finished)return;finished=true;clearTimeout(timer);script.remove();delete window[cb];
+          if(finished)return;
+          finished=true;clearTimeout(timer);script.remove();delete window[cb];
           if(err)reject(err);else resolve(data);
         };
-        const timer=setTimeout(()=>done(new Error('Semakan tamat masa')),5500);
+        const timer=setTimeout(()=>done(new Error('Pelayan tidak menjawab dalam masa 8 saat')),8000);
         window[cb]=data=>done(null,data);
-        script.onerror=()=>done(new Error('Semakan tidak dapat dicapai'));
-        const sep=API_URL.includes('?')?'&':'?';
-        script.src=API_URL+sep+'mode=check&id='+encodeURIComponent(id)+'&callback='+encodeURIComponent(cb)+'&_='+Date.now();
+        script.onerror=()=>done(new Error('Apps Script tidak dapat dicapai / akses tidak dibenarkan'));
+        const p=new URLSearchParams({...params,callback:cb,_:Date.now().toString()});
+        script.src=API_URL+'?'+p;
         document.head.appendChild(script);
       });
     }
+    async function checkReceipt(id){return await apiJSONP({mode:'check',id});}
+
+    // Penghantaran POST sebagai HTML FORM tersembunyi (bukan fetch no-cors).
+    // Cara ini tidak bergantung pada CORS untuk menghantar data dari GitHub Pages.
+    // Penghantaran belum dianggap berjaya sehingga resit dilihat dari Apps Script.
+    function sendForm(payload){
+      const frameName='bmFrame'+Date.now()+'_'+Math.floor(Math.random()*100000);
+      const frame=document.createElement('iframe');
+      frame.name=frameName;frame.title='Penghantaran markah';
+      frame.style.display='none';
+      const form=document.createElement('form');
+      form.method='POST';form.action=API_URL;form.target=frameName;
+      form.acceptCharset='UTF-8';form.style.display='none';
+      const input=document.createElement('input');
+      input.type='hidden';input.name='payload';input.value=JSON.stringify(payload);
+      form.append(input);
+      document.body.append(frame,form);
+      form.submit();
+      // Jangan tunggu onload iframe: jawapan Google mungkin menyekat embedding.
+      form.remove();
+      setTimeout(()=>frame.remove(),45000);
+    }
+
+    $('testConnection').addEventListener('click',async()=>{
+      const btn=$('testConnection'), area=$('connectionStatus');
+      btn.disabled=true;area.style.display='block';
+      area.className='status';area.textContent='Sedang menguji Apps Script dan Google Sheets...';
+      try{
+        const result=await apiJSONP({mode:'ping'});
+        if(result && result.ok && result.version==='BM5-V2'){
+          area.className='status ok';
+          area.textContent='✅ Sambungan berjaya! Apps Script V2 boleh membaca Google Sheets.';
+        }else if(result && result.error){
+          area.className='status bad';
+          area.textContent='❌ Pelayan membalas: '+result.error;
+        }else{
+          area.className='status warn';
+          area.textContent='⚠️ Versi Apps Script belum V2. Deploy kod Code.gs baharu (New version) dahulu.';
+        }
+      }catch(err){
+        area.className='status bad';
+        area.textContent='❌ Tidak dapat menghubungi Apps Script. Periksa URL /exec, akses Anyone dan status deployment. ('+err.message+')';
+      }finally{btn.disabled=false;}
+    });
     $('sendBtn').addEventListener('click',async()=>{
       if(busy||sent)return;
       if(!/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec(?:\?.*)?$/.test(API_URL)){
@@ -261,13 +308,16 @@
       $('sendBtn').innerHTML='<span class="spinner"></span>MENGHANTAR MARKAH...';
       status('Sedang menghantar dan mengesahkan rekod dalam Google Sheets...');
       try{
-        const body = new URLSearchParams({payload:JSON.stringify({id:attemptId,nama:student.nama,kelas:student.kelas,jawapan:answers})});
-        await fetch(API_URL,{method:'POST',mode:'no-cors',body,redirect:'follow'});
+        sendForm({id:attemptId,nama:student.nama,kelas:student.kelas,jawapan:answers});
         let receipt=null;
-        for(let i=0;i<6;i++){
-          await sleep(1100);
-          try{receipt=await checkReceipt(attemptId);if(receipt && receipt.found)break;}
-          catch(_){/* cuba semula semakan */}
+        let checkError='';
+        for(let i=0;i<8;i++){
+          await sleep(1200);
+          try{
+            receipt=await checkReceipt(attemptId);
+            if(receipt && receipt.found)break;
+            if(receipt && receipt.error)checkError=receipt.error;
+          }catch(err){checkError=err.message;}
         }
         if(receipt && receipt.found){
           sent=true;
@@ -275,7 +325,8 @@
           $('sendBtn').textContent='✓ MARKAH SUDAH DISIMPAN';
           $('editBtn').disabled=true;
         }else{
-          status('⚠ Belum dapat sahkan rekod dalam Sheets. Semak deployment Apps Script dan tekan “Cuba Hantar Semula”. Sistem tidak akan menggandakan rekod bagi ID cubaan yang sama.','warn');
+          const info=checkError ? ' Maklumat: '+checkError : '';
+          status('⚠️ Tiada pengesahan rekod dalam Sheets.'+info+' Cuba hantar semula dan periksa Executions dalam Apps Script. ID cubaan kekal sama untuk mengelakkan rekod berganda.','warn');
           $('sendBtn').textContent='↻ CUBA HANTAR SEMULA';
         }
       }catch(error){
